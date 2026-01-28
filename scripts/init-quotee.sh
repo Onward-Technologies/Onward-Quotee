@@ -50,6 +50,7 @@ fi
 USERNAME=$(echo "$USERNAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr -cd 'a-z0-9-')
 
 WORKTREE_DIR="$HOME/Quotee-$USERNAME"
+BRANCH_NAME="session/$USERNAME"
 
 echo ""
 echo "Setting up worktree: $WORKTREE_DIR"
@@ -62,7 +63,8 @@ if [ ! -d "$REPO_DIR" ]; then
 else
     echo "Repository exists. Pulling latest..."
     cd "$REPO_DIR"
-    git pull origin main
+    git fetch origin
+    git pull origin main 2>/dev/null || true
 fi
 
 # Step 3: Create worktree if not exists
@@ -72,7 +74,10 @@ if [ -d "$WORKTREE_DIR" ]; then
     echo "Worktree already exists at $WORKTREE_DIR"
 else
     echo "Creating worktree for $USERNAME..."
-    git worktree add "$WORKTREE_DIR" main
+    # Create a new branch for this user's session, based on main
+    git worktree add -b "$BRANCH_NAME" "$WORKTREE_DIR" origin/main 2>/dev/null || \
+    git worktree add "$WORKTREE_DIR" "$BRANCH_NAME" 2>/dev/null || \
+    git worktree add --detach "$WORKTREE_DIR" origin/main
 fi
 
 # Step 4: Navigate to worktree
