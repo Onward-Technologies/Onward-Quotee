@@ -1,4 +1,4 @@
-# Onward Quotee - Getting Started
+# Onward Quotee: Agreement & Estimating Agent
 
 ## One-Line Setup (Recommended)
 
@@ -24,7 +24,7 @@ git clone https://github.com/Onward-Technologies/Onward-Quotee.git ~/Onward-Quot
 
 # Create your worktree (replace YOUR_NAME)
 cd ~/Onward-Quotee
-git worktree add ../Quotee-YOUR_NAME main
+git worktree add -b session/YOUR_NAME ~/Quotee-YOUR_NAME origin/main
 
 # Open Claude Code
 cd ~/Quotee-YOUR_NAME
@@ -35,7 +35,7 @@ claude
 
 ## Prerequisites
 
-- **Claude Code** - [Install here](https://claude.ai/claude-code)
+- **Claude Code** - https://claude.ai/claude-code
 - **Git** - Should already be installed
 - **Azure CLI** (optional) - For API key access and auto-detecting your username
 
