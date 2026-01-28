@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Post-merge hook: Notify if CLAUDE.md was updated
+#
+
+# Check if CLAUDE.md was changed in the merge
+CHANGED_FILES=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD 2>/dev/null)
+
+if echo "$CHANGED_FILES" | grep -q "CLAUDE.md"; then
+    echo ""
+    echo -e "\033[33m════════════════════════════════════════════════════════════\033[0m"
+    echo -e "\033[33m  CLAUDE.md was updated!\033[0m"
+    echo -e "\033[33m════════════════════════════════════════════════════════════\033[0m"
+    echo ""
+    echo "  Restart Claude Code to apply the new instructions:"
+    echo ""
+    echo "    exit"
+    echo "    claude"
+    echo ""
+    echo -e "\033[33m════════════════════════════════════════════════════════════\033[0m"
+    echo ""
+fi

@@ -1,0 +1,29 @@
+#!/bin/bash
+#
+# Post-checkout hook: Notify if CLAUDE.md differs after checkout
+#
+
+PREV_HEAD=$1
+NEW_HEAD=$2
+BRANCH_CHECKOUT=$3
+
+# Only run on branch checkouts, not file checkouts
+if [ "$BRANCH_CHECKOUT" != "1" ]; then
+    exit 0
+fi
+
+# Check if CLAUDE.md changed between commits
+if ! git diff --quiet "$PREV_HEAD" "$NEW_HEAD" -- CLAUDE.md 2>/dev/null; then
+    echo ""
+    echo -e "\033[33m════════════════════════════════════════════════════════════\033[0m"
+    echo -e "\033[33m  CLAUDE.md differs on this branch!\033[0m"
+    echo -e "\033[33m════════════════════════════════════════════════════════════\033[0m"
+    echo ""
+    echo "  Restart Claude Code to apply the new instructions:"
+    echo ""
+    echo "    exit"
+    echo "    claude"
+    echo ""
+    echo -e "\033[33m════════════════════════════════════════════════════════════\033[0m"
+    echo ""
+fi

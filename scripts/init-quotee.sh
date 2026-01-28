@@ -83,6 +83,12 @@ fi
 # Step 4: Navigate to worktree
 cd "$WORKTREE_DIR"
 
+# Step 5: Install git hooks
+if [ -f "scripts/install-hooks.sh" ]; then
+    echo "Installing git hooks..."
+    bash scripts/install-hooks.sh
+fi
+
 echo ""
 echo "════════════════════════════════════════════════════════════"
 echo "  Setup Complete!"

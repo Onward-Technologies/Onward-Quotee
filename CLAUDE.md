@@ -1,6 +1,49 @@
-# CLAUDE.md - Onward Quotee
+# CLAUDE.md
 
-This file provides guidance to Claude Code when working in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+**Onward Quotee** is a Claude Code-based quoting/pricing assistant for Onward Technology Solutions sales team. It provides MSA/OSG knowledge, quote templates, and multi-provider AI validation for quote pricing.
+
+---
+
+## Commands
+
+```bash
+# Load API keys (requires Azure CLI login)
+source scripts/load-ai-keys.sh
+
+# Validate quote with single provider
+python3 scripts/ai.py --provider google "Review quote: [DETAILS]"
+python3 scripts/ai.py --provider openai "Review quote: [DETAILS]"
+python3 scripts/ai.py --provider anthropic "Review quote: [DETAILS]"
+
+# Multi-provider consultation
+python3 scripts/ai.py --consult "Full quote review: [DETAILS]"
+
+# List providers and check API key status
+python3 scripts/ai.py --list-providers
+```
+
+**Dependencies:** `pip install openai google-generativeai anthropic`
+
+---
+
+## Architecture
+
+```
+scripts/
+  ai.py              # Multi-provider AI consultation (OpenAI, Google, Anthropic)
+  load-ai-keys.sh    # Loads API keys from Azure Key Vault
+  init-quotee.sh     # Team initialization (creates worktrees, installs hooks)
+  install-hooks.sh   # Install git hooks for CLAUDE.md change notifications
+  hooks/             # Git hooks (post-merge, post-checkout)
+```
+
+**ai.py**: Query LLMs for quote validation. Uses environment variables `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `ANTHROPIC_API_KEY`. Default system prompt enforces SW Florida MSP pricing context with 40-60% margin targets.
+
+**Worktree Pattern**: Each user works in isolated worktrees (`~/Quotee-<name>`) off main branch to prevent conflicts during concurrent sessions.
 
 ---
 
@@ -87,6 +130,27 @@ After verification, state:
 | T&M | Time & Materials at current hourly rates |
 | Monthly Recurring | Standard subscription billing |
 
+### Service Categories (Everything as a Service)
+
+Onward is an "Everything as a Service" company. Categorize all line items:
+
+| Category | Description |
+|----------|-------------|
+| HaaS | Hardware as a Service (displays, servers, endpoints, network equipment) |
+| PaaS | Platform as a Service (content management, software platforms) |
+| IaaS | Infrastructure as a Service (cloud compute, storage, networking) |
+| ITSMaaS | IT Service Management as a Service (monitoring, support, helpdesk) |
+| DevOpsaaS | DevOps as a Service (CI/CD, automation, deployment) |
+| SecOpsaaS | Security Operations as a Service (MDR, XDR, compliance monitoring) |
+| Product | One-time purchases (installation, project work, equipment sales) |
+
+### Term Requirements
+
+- **All "aaS" items**: Require 1-3 year term commitment (default: match contract term)
+- **Products**: One-time, no term (listed separately from services)
+- **Default term**: 1 year minimum, 3 year maximum
+- Terms must be explicitly stated on each service line item
+
 ### HaaS Requirements
 
 - Deploy within 2 months of signature
@@ -113,15 +177,21 @@ Onward white-labels ALL services. In quotes:
 ### Service Description
 [Clear description of what's included]
 
-### Pricing
+### Quote Line Item Briefs
 
-| Line Item | Qty | Unit Price | Monthly Total |
-|-----------|-----|------------|---------------|
-| [Item 1]  | X   | $XX.XX     | $XXX.XX       |
-| **Total** |     |            | **$X,XXX.XX** |
+| Line Item | Category | Term | Qty | Unit Type | Unit Price | Monthly Total |
+|-----------|----------|------|-----|-----------|------------|---------------|
+| [Item 1]  | HaaS     | 1 yr | X   | per unit  | $XX.XX     | $XXX.XX       |
+| [Item 2]  | PaaS     | 1 yr | X   | per user  | $XX.XX     | $XXX.XX       |
+| [Item 3]  | ITSMaaS  | 1 yr | X   | per unit  | $XX.XX     | $XXX.XX       |
+| [Item 4]  | Product  | -    | X   | one-time  | $XX.XX     | -             |
+| **Total Monthly** |  |      |     |           |            | **$X,XXX.XX** |
 
-### Term
+### Contract Term
 - Initial Term: [12/24/36 months]
+- Start Date: [Date]
+- End Date: [Date]
+- Billing: Monthly
 - Auto-Renewal: Per MSA (90-day notice required)
 
 ### What's Included
@@ -150,18 +220,10 @@ Onward white-labels ALL services. In quotes:
 
 ## Validation Protocol
 
-Before finalizing quotes, validate pricing:
+Before finalizing quotes, validate pricing using multi-provider consultation:
 
 ```bash
-# Load API keys (if not already done)
-source scripts/load-ai-keys.sh
-
-# Validate with AI consultants
-python3 scripts/ai.py --provider google "Review quote: [DETAILS]. Is pricing competitive? Score 1-10."
-python3 scripts/ai.py --provider openai "Review quote: [DETAILS]. Identify gaps. Score 1-10."
-
-# Or multi-provider consultation
-python3 scripts/ai.py --consult "Full quote review: [DETAILS]"
+python3 scripts/ai.py --consult "Review quote: [DETAILS]. Score 1-10."
 ```
 
 **Target: 9/10 confidence before delivery**
@@ -202,6 +264,31 @@ python3 scripts/ai.py --consult "Full quote review: [DETAILS]"
 For complete terms, review:
 - MSA: https://onward.solutions/msa
 - OSG: https://onward.solutions/osg
+
+---
+
+## Keeping Instructions Updated
+
+CLAUDE.md changes require a session restart to take effect.
+
+**Install notification hooks (one-time per worktree):**
+```bash
+bash scripts/install-hooks.sh
+```
+
+This installs git hooks that alert you after `git pull` or branch checkout when CLAUDE.md has changed.
+
+**Manual refresh:**
+```bash
+exit
+claude
+```
+
+**Pull updates from team:**
+```bash
+git pull origin main
+# If CLAUDE.md changed, restart Claude Code
+```
 
 ---
 
